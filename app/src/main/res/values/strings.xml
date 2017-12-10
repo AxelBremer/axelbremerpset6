@@ -5,4 +5,7 @@
     <string name="no_account_yet_register_here">No account yet? Register here</string>
     <string name="login">Login</string>
     <string name="register">Register</string>
+    <string name="must_be_more_than_6_characters">Must be more than 6 characters...</string>
+    <string name="search_terms_here">search terms here</string>
+    <string name="search">Search</string>
 </resources>

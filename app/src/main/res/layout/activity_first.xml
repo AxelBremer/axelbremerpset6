@@ -10,7 +10,7 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:layout_gravity="center_vertical"
         android:layout_weight="1"
         android:gravity="center_vertical"
@@ -27,6 +27,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="20dip"
             android:layout_marginTop="5dip"
+            android:hint="@string/e_mail"
             android:singleLine="true" />
 
         <TextView
@@ -39,6 +40,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dip"
+            android:hint="@string/must_be_more_than_6_characters"
             android:inputType="textPassword"
             android:singleLine="true" />
 
@@ -53,7 +55,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dip"
                 android:layout_weight="1"
-                android:text="@string/login" />
+                android:text="@string/login"
+                android:onClick="goToNext"/>
 
             <Button
                 android:id="@+id/btnRegister"

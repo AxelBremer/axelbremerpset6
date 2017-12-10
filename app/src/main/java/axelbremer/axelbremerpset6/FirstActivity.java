@@ -1,9 +1,11 @@
 package axelbremer.axelbremerpset6;
 
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -44,5 +46,11 @@ public class FirstActivity extends AppCompatActivity {
                         // ...
                     }
                 });
+    }
+
+    public void goToNext(View view) {
+        Intent intent = new Intent(FirstActivity.this, SearchActivity.class);
+        startActivity(intent);
+        finish();
     }
 }

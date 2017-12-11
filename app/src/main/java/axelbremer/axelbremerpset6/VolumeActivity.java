@@ -7,6 +7,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Html;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ImageView;
@@ -18,6 +21,13 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -40,18 +50,30 @@ public class VolumeActivity extends AppCompatActivity {
     ImageView thumbnailImageView;
     Bitmap bmp;
     Volume currentVolume;
+    Favorites favorites;
+    private FirebaseAuth mAuth;
+    private FirebaseDatabase db;
+    private DatabaseReference mDatabase;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_volume);
-        Intent intent = getIntent();
         queue = Volley.newRequestQueue(this);
 
         titleTextView = findViewById(R.id.titleTextView);
         descTextView = findViewById(R.id.descTextView);
         authorsTextView = findViewById(R.id.authorsTextView);
         thumbnailImageView = findViewById(R.id.thumbnailImageView);
+
+        mAuth = FirebaseAuth.getInstance();
+        db = FirebaseDatabase.getInstance();
+
+        newVolume();
+    }
+
+    private void newVolume(){
+        Intent intent = getIntent();
 
         id = intent.getStringExtra("Id");
 
@@ -66,14 +88,26 @@ public class VolumeActivity extends AppCompatActivity {
 
                         try {
                             JSONObject volume = new JSONObject(response);
-                            String title = volume.getJSONObject("volumeInfo").getString("title");
-                            String desc = volume.getJSONObject("volumeInfo").getString("description");
-                            String imageUrl = volume.getJSONObject("volumeInfo").getJSONObject("imageLinks").getString("medium");
+                            String title = volume.getJSONObject("volumeInfo").optString("title");
+                            String desc = volume.getJSONObject("volumeInfo").optString("description");
+                            if(desc == ""){
+                                desc = "no description";
+                            }
+                            JSONObject imageLinks = volume.getJSONObject("volumeInfo").optJSONObject("imageLinks");
+                            String imageUrl = "";
+                            if(imageLinks != null) {
+                                imageUrl = imageLinks.optString("medium");
+                                if(imageUrl == ""){
+                                    imageUrl = imageLinks.optString("thumbnail");
+                                }
+                            }
                             String authors = "";
-                            JSONArray arr = volume.getJSONObject("volumeInfo").getJSONArray("authors");
+                            JSONArray arr = volume.getJSONObject("volumeInfo").optJSONArray("authors");
 
-                            for(int i = 0; i < arr.length(); i++) {
-                                authors += arr.getString(i);
+                            if(arr != null) {
+                                for (int i = 0; i < arr.length(); i++) {
+                                    authors += arr.getString(i);
+                                }
                             }
 
                             currentVolume = new Volume(title, authors, id, desc, imageUrl);
@@ -93,37 +127,43 @@ public class VolumeActivity extends AppCompatActivity {
         queue.add(stringRequest);
     }
 
+    @Override
+    public void onResume(){
+        super.onResume();
+        newVolume();
+    }
+
     private void updateViews() {
-
-
         titleTextView.setText(currentVolume.getTitle());
         descTextView.setText(Html.fromHtml(currentVolume.getDesc(), Html.FROM_HTML_MODE_COMPACT));
         authorsTextView.setText(currentVolume.getAuthors());
 
-        new Thread() {
-            @Override
-            public void run() {
-                URL url = null;
-                try {
-                    url = new URL(currentVolume.getImageUrl());
-                } catch (MalformedURLException e) {
-                    e.printStackTrace();
+        if(currentVolume.getImageUrl() != "") {
+            new Thread() {
+                @Override
+                public void run() {
+                    URL url = null;
+                    try {
+                        url = new URL(currentVolume.getImageUrl());
+                    } catch (MalformedURLException e) {
+                        e.printStackTrace();
+                    }
+                    Bitmap bmp = null;
+                    try {
+                        bmp = BitmapFactory.decodeStream(url.openConnection().getInputStream());
+                        setImage(bmp);
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                refreshImage();
+                            }
+                        });
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
-                Bitmap bmp = null;
-                try {
-                    bmp = BitmapFactory.decodeStream(url.openConnection().getInputStream());
-                    setImage(bmp);
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            refreshImage();
-                        }
-                    });
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }.start();
+            }.start();
+        }
     }
 
     private void refreshImage() {
@@ -133,4 +173,55 @@ public class VolumeActivity extends AppCompatActivity {
     private void setImage(Bitmap b) {
         bmp = b;
     }
+
+    public void addToFavorites(View view) {
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        String uid = currentUser.getUid();
+        mDatabase = db.getReference("favorites").child(uid);
+
+        ValueEventListener postListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                favorites = dataSnapshot.getValue(Favorites.class);
+                favorites.addVolume(currentVolume.getTitle(), currentVolume.getId());
+                addToDatabase(favorites);
+                Intent intent = new Intent(VolumeActivity.this, FavoritesActivity.class);
+                startActivity(intent);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                // Getting Post failed, log a message
+                Log.w("FavoritesActivity", "loadPost:onCancelled", databaseError.toException());
+                // ...
+            }
+
+        };
+        mDatabase.addListenerForSingleValueEvent(postListener);
+    }
+
+    private void addToDatabase(Favorites favorites) {
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        String uid = currentUser.getUid();
+        mDatabase = db.getReference();
+
+        mDatabase.child("favorites").child(uid).setValue(favorites);
+    }
+
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.actions, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.favoritesMenuItem:
+                Intent intent = new Intent(VolumeActivity.this, FavoritesActivity.class);
+                startActivity(intent);
+                break;
+        }
+        return true;
+    }
 }
+

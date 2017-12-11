@@ -4,11 +4,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="axelbremer.axelbremerpset6.SearchActivity">
+    tools:context="axelbremer.axelbremerpset6.FavoritesActivity">
 
     <ListView
         android:layout_above="@id/searchLinearLayout"
-        android:id="@+id/resultListView"
+        android:id="@+id/favoritesListView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 
@@ -20,20 +20,19 @@
         android:orientation="horizontal">
 
         <EditText
-            android:id="@+id/searchBar"
+            android:id="@+id/searchUserBar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="5"
             android:ems="10"
-            android:hint="@string/search_terms_here"
+            android:hint="Search for user's favorites"
             android:inputType="textPersonName" />
 
         <Button
-            android:id="@+id/searchButton"
+            android:id="@+id/searchUserButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight=".5"
-            android:text="@string/search"
-            android:onClick="onSearchClick"/>
+            android:text="@string/search"/>
     </LinearLayout>
 </RelativeLayout>

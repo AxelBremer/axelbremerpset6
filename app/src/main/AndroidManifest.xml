@@ -19,7 +19,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".SearchActivity" />
-        <activity android:name=".VolumeActivity"></activity>
+        <activity android:name=".VolumeActivity" />
+        <activity android:name=".FavoritesActivity"></activity>
     </application>
 
 </manifest>

@@ -8,4 +8,6 @@
     <string name="must_be_more_than_6_characters">Must be more than 6 characters...</string>
     <string name="search_terms_here">search terms here</string>
     <string name="search">Search</string>
+    <string name="add_to_favorites">Add to Favorites</string>
+    <string name="thumbnail">thumbnail</string>
 </resources>

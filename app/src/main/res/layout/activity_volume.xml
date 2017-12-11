@@ -21,7 +21,7 @@
             android:id="@+id/thumbnailImageView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:contentDescription="thumbnail"
+            android:contentDescription="@string/thumbnail"
             app:srcCompat="@android:drawable/ic_notification_clear_all" />
 
         <TextView
@@ -34,6 +34,13 @@
             android:id="@+id/descTextView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
+
+        <Button
+            android:id="@+id/addButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/add_to_favorites"
+            android:onClick="addToFavorites"/>
 
     </LinearLayout>
 </ScrollView>

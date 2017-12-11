@@ -14,8 +14,13 @@ public class Favorites {
     public Favorites(){
         nameList = new ArrayList<>();
         idList = new ArrayList<>();
-        idList.add(	"XjYQCwAAQBAJ");
+        idList.add("XjYQCwAAQBAJ");
         nameList.add("Harry Potter en de Relieken van de Dood");
+    }
+
+    public Favorites(List<String> aNameList, List<String> anIdList){
+        nameList = aNameList;
+        idList = anIdList;
     }
 
     public List<String> getNameList(){

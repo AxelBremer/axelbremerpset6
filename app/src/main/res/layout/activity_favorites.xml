@@ -6,7 +6,15 @@
     android:layout_height="match_parent"
     tools:context="axelbremer.axelbremerpset6.FavoritesActivity">
 
+    <TextView
+        android:id="@+id/nameTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:gravity="center_horizontal"/>
+
     <ListView
+        android:layout_below="@id/nameTextView"
         android:layout_above="@id/searchLinearLayout"
         android:id="@+id/favoritesListView"
         android:layout_width="match_parent"
@@ -25,7 +33,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="5"
             android:ems="10"
-            android:hint="Search for user's favorites"
+            android:hint="@string/find_favorites_by_user_e_mail"
             android:inputType="textPersonName" />
 
         <Button
@@ -33,6 +41,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight=".5"
-            android:text="@string/search"/>
+            android:text="@string/search"
+            android:onClick="onFavoritesSearchClick"/>
     </LinearLayout>
 </RelativeLayout>

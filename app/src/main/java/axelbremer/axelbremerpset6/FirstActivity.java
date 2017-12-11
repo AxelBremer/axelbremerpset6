@@ -55,7 +55,7 @@ public class FirstActivity extends AppCompatActivity {
                                 // Sign in success, update UI with the signed-in user's information
                                 Log.d("CREATEUSER", "createUserWithEmail:success");
                                 FirebaseUser user = mAuth.getCurrentUser();
-                                makeNewFavorites(user);
+                                makeNewFavorites(user, email);
                                 Intent intent = new Intent(FirstActivity.this, SearchActivity.class);
                                 Toast.makeText(FirstActivity.this, "User created.",
                                         Toast.LENGTH_SHORT).show();
@@ -75,11 +75,14 @@ public class FirstActivity extends AppCompatActivity {
         }
     }
 
-    private void makeNewFavorites(FirebaseUser user) {
+    private void makeNewFavorites(FirebaseUser user, String email) {
         String uid = user.getUid();
         Favorites fav = new Favorites();
 
+        String dbEmail = email.replace('.', ',');
+
         mDatabase.child("favorites").child(uid).setValue(fav);
+        mDatabase.child("emailToUid").child(dbEmail).setValue(uid);
         Log.d("FAVORITES", "makeNewFavorites: ");
     }
 

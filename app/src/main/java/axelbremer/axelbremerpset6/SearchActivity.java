@@ -29,6 +29,11 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * This activity contains the search funtion. A user can look for books here. And after searching
+ * the user can click on a title to open the details page about a certain volume.
+ */
+
 public class SearchActivity extends AppCompatActivity {
     ListView resultListView;
     ArrayAdapter adapter;
@@ -41,6 +46,10 @@ public class SearchActivity extends AppCompatActivity {
     String query;
     private FirebaseAuth mAuth;
 
+
+    /**
+     * Initializes the firebase objects and finds the views.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,9 +62,15 @@ public class SearchActivity extends AppCompatActivity {
     }
 
 
+    /**
+     * When a user hits the search button the app makes a GET request to the api server using
+     * the search terms the user put in the searchbar editText. Each returned volume is added
+     * to a list and updatelistview is called to show it in the UI.
+     */
     public void onSearchClick(View view) {
         query = searchBar.getText().toString();
         newUrl = url+query;
+
         // Request a string response from the provided URL.
         StringRequest stringRequest = new StringRequest(Request.Method.GET, newUrl,
                 new Response.Listener<String>() {
@@ -86,6 +101,7 @@ public class SearchActivity extends AppCompatActivity {
                             e.printStackTrace();
                         }
 
+                        // when the list is
                         resultListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                             @Override
                             public void onItemClick(AdapterView<?> parent, View view, int position,
@@ -108,6 +124,10 @@ public class SearchActivity extends AppCompatActivity {
         queue.add(stringRequest);
     }
 
+
+    /**
+     * If user is not logged he gets sent back to the firstActivity.
+     */
     @Override
     public void onStart() {
         super.onStart();
@@ -119,18 +139,27 @@ public class SearchActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Updates the listview according to the new lists.
+     */
     private void updateListView() {
         adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, list);
 
         resultListView.setAdapter(adapter);
     }
 
+    /**
+     * Creates the top right menu.
+     */
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.actions, menu);
         return super.onCreateOptionsMenu(menu);
     }
 
+    /**
+     * Sets the functionality of the Favorites button.
+     */
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.favoritesMenuItem:

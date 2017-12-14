@@ -40,6 +40,10 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * The volume activity shows the detail for the Volume with the given id.
+ */
+
 public class VolumeActivity extends AppCompatActivity {
     String newUrl;
     String id;
@@ -55,6 +59,10 @@ public class VolumeActivity extends AppCompatActivity {
     private FirebaseDatabase db;
     private DatabaseReference mDatabase;
 
+
+    /**
+     * Initializes the firebase objects and finds all the views.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,6 +80,10 @@ public class VolumeActivity extends AppCompatActivity {
         newVolume();
     }
 
+    /**
+     * Updates the ui according to the id given with the Intent. Gets the details using a GET
+     * request to the google books API.
+     */
     private void newVolume(){
         Intent intent = getIntent();
 
@@ -86,6 +98,7 @@ public class VolumeActivity extends AppCompatActivity {
                     public void onResponse(String response) {
                         Log.d("RESPONSE", "onResponse: " + response);
 
+                        // Extracts the details from the JSON obtained from the api.
                         try {
                             JSONObject volume = new JSONObject(response);
                             String title = volume.getJSONObject("volumeInfo").optString("title");
@@ -110,6 +123,7 @@ public class VolumeActivity extends AppCompatActivity {
                                 }
                             }
 
+                            // Save these details in a Volume object.
                             currentVolume = new Volume(title, authors, id, desc, imageUrl);
 
                             updateViews();
@@ -133,11 +147,13 @@ public class VolumeActivity extends AppCompatActivity {
         newVolume();
     }
 
+    // Update all the views according to the current Volume object.
     private void updateViews() {
         titleTextView.setText(currentVolume.getTitle());
         descTextView.setText(Html.fromHtml(currentVolume.getDesc(), Html.FROM_HTML_MODE_COMPACT));
         authorsTextView.setText(currentVolume.getAuthors());
 
+        // Retrieve the image
         if(currentVolume.getImageUrl() != "") {
             new Thread() {
                 @Override
@@ -174,6 +190,11 @@ public class VolumeActivity extends AppCompatActivity {
         bmp = b;
     }
 
+
+    /**
+     * When the add to favorites button is clicked the volume is added to the favorites and the
+     * new favorites are uploaded to the database.
+     */
     public void addToFavorites(View view) {
         FirebaseUser currentUser = mAuth.getCurrentUser();
         String uid = currentUser.getUid();
@@ -200,6 +221,9 @@ public class VolumeActivity extends AppCompatActivity {
         mDatabase.addListenerForSingleValueEvent(postListener);
     }
 
+    /**
+     * Uploads the given Favorites object to the database.
+     */
     private void addToDatabase(Favorites favorites) {
         FirebaseUser currentUser = mAuth.getCurrentUser();
         String uid = currentUser.getUid();
@@ -208,12 +232,18 @@ public class VolumeActivity extends AppCompatActivity {
         mDatabase.child("favorites").child(uid).setValue(favorites);
     }
 
+    /**
+     * Creates the top right menu.
+     */
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.actions, menu);
         return super.onCreateOptionsMenu(menu);
     }
 
+    /**
+     * Sets the functionality of the Favorites button.
+     */
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.favoritesMenuItem:

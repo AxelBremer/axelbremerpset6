@@ -1,9 +1,8 @@
 package axelbremer.axelbremerpset6;
 
-import java.util.List;
 
 /**
- * Created by Axel Bremer on 10-12-2017.
+ * The Volume class contains information for 1 Volume.
  */
 
 public class Volume {

@@ -22,6 +22,11 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.List;
 
+/**
+ * This activity shows a users favorites. Starting with the logged in users favorites. Another
+ * users favorites can be shown by looking for the users e-mail address.
+ */
+
 public class FavoritesActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private FirebaseDatabase db;
@@ -44,12 +49,21 @@ public class FavoritesActivity extends AppCompatActivity {
         db = FirebaseDatabase.getInstance();
 
         loggedInUser = mAuth.getCurrentUser();
+
+        if(loggedInUser == null){
+            Intent intent = new Intent(this, FirstActivity.class);
+            startActivity(intent);
+        }
+
         viewedUid = loggedInUser.getUid();
 
         favoritesListView = findViewById(R.id.favoritesListView);
         nameTextView = findViewById(R.id.nameTextView);
         searchUserBar = findViewById(R.id.searchUserBar);
 
+        /**
+         * When clicking on an item, the app takes the user to the details page of that volume.
+         */
         favoritesListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position,
@@ -61,15 +75,25 @@ public class FavoritesActivity extends AppCompatActivity {
             }
         });
 
+
+        /**
+         * When long clicking an item the app the selected item will be deleted from the favorites.
+         * This only happens when the currently viewed favorites are from the currently logged in
+         * user. If the last book is deleted a new book is added because firebase won't allow an
+         * empty list to be saved.
+         */
         favoritesListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> arg0, View arg1,
                                            int pos, long id) {
                 if(viewedUid.equals(loggedInUser.getUid())){
                     mDatabase = db.getReference();
+                    Favorites fav;
+
                     nameList.remove(pos);
                     idList.remove(pos);
-                    Favorites fav;
+
+                    // if the list is empty make a new one with the starting book.
                     if(idList.size() == 0){
                         fav = new Favorites();
                         Toast.makeText(FavoritesActivity.this, "Gotta have at least 1 favorite.",
@@ -77,6 +101,8 @@ public class FavoritesActivity extends AppCompatActivity {
                     } else{
                         fav = new Favorites(nameList, idList);
                     }
+
+                    // Set the updated favorites in the database.
                     mDatabase.child("favorites").child(viewedUid).setValue(fav);
                     updateListView(loggedInUser.getUid(), loggedInUser.getEmail());
                     return true;
@@ -89,6 +115,7 @@ public class FavoritesActivity extends AppCompatActivity {
         });
     }
 
+    //
     @Override
     public void onStart() {
         super.onStart();
@@ -96,22 +123,27 @@ public class FavoritesActivity extends AppCompatActivity {
         updateListView(currentUser.getUid(), currentUser.getEmail());
     }
 
+
+    /**
+     * Update the list view with the selected users favorites. Also checks if the selected user
+     * exists.
+     */
     private void updateListView(String uid, String email) {
         try {
             mDatabase = db.getReference("favorites").child(uid);
 
-            Log.d("Favorites", "uid" + uid + "loggeduid" + loggedInUser.getUid());
-
+            // Change the title according to whose favorites are being shown.
             if (uid.equals(loggedInUser.getUid())) {
                 nameTextView.setText("Your favorites");
             } else {
-                nameTextView.setText(email + "'s favorites");
+                String mail = email.replace(',','.');
+                nameTextView.setText(mail + "'s favorites");
             }
 
             ValueEventListener postListener = new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
-                    // Get Post object and use the values to update the UI
+                    // Get Favorites object and set the listview.
                     Favorites fav = dataSnapshot.getValue(Favorites.class);
 
                     setLists(fav);
@@ -125,7 +157,6 @@ public class FavoritesActivity extends AppCompatActivity {
                 public void onCancelled(DatabaseError databaseError) {
                     // Getting Post failed, log a message
                     Log.w("FavoritesActivity", "loadPost:onCancelled", databaseError.toException());
-                    // ...
                 }
 
             };
@@ -136,11 +167,18 @@ public class FavoritesActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Set the lists using the given Favorites object.
+     */
     private void setLists(Favorites fav) {
         idList = fav.getIdList();
         nameList = fav.getNameList();
     }
 
+    /**
+     * When the user searches for another user's favorites using mail the uid is retrieved from
+     * the database and updatelistview() is called using the mail and uid.
+     */
     public void onFavoritesSearchClick(View view) {
         String email = searchUserBar.getText().toString().replace('.',',');
         mDatabase = db.getReference("emailToUid").child(email);
@@ -148,7 +186,7 @@ public class FavoritesActivity extends AppCompatActivity {
         ValueEventListener postListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                // Get Post object and use the values to update the UI
+                // Get uid from database and pass it to updatelistview()
                 String uid = dataSnapshot.getValue(String.class);
                 viewedUid = uid;
                 String email = searchUserBar.getText().toString().replace('.',',');

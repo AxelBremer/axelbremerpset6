@@ -20,6 +20,11 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+/**
+ * This activity contains the login and register page where a user can log in using e-mail and
+ * password. Or register a new account using email and password.
+ */
+
 public class FirstActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private FirebaseDatabase db;
@@ -29,6 +34,10 @@ public class FirstActivity extends AppCompatActivity {
     EditText emailEditText;
     EditText passwordEditText;
 
+
+    /**
+     * Initializes the firebase database and authorization objects and finds the editTexts.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,6 +51,11 @@ public class FirstActivity extends AppCompatActivity {
         passwordEditText = findViewById(R.id.passwordEditText);
     }
 
+    /**
+     * Checks if the given password is longer than 6 characters and creates a user using the given
+     * firebase method. A new favorites object is also created and added to the database. After
+     * logging in it sends the user to the search activity.
+     */
     public void createUser(View view) {
         email = emailEditText.getText().toString();
         password = passwordEditText.getText().toString();
@@ -52,6 +66,7 @@ public class FirstActivity extends AppCompatActivity {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if (task.isSuccessful()) {
+
                                 // Sign in success, update UI with the signed-in user's information
                                 Log.d("CREATEUSER", "createUserWithEmail:success");
                                 FirebaseUser user = mAuth.getCurrentUser();
@@ -60,7 +75,9 @@ public class FirstActivity extends AppCompatActivity {
                                 Toast.makeText(FirstActivity.this, "User created.",
                                         Toast.LENGTH_SHORT).show();
                                 startActivity(intent);
+
                             } else {
+
                                 // If sign in fails, display a message to the user.
                                 Log.w("CREATEUSER", "createUserWithEmail:failure", task.getException());
                                 Toast.makeText(FirstActivity.this, "Authentication failed.",
@@ -75,6 +92,10 @@ public class FirstActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Creates a new favorites object and adds it to the database. Also adds the new user to the
+     * email to uid table in the database.
+     */
     private void makeNewFavorites(FirebaseUser user, String email) {
         String uid = user.getUid();
         Favorites fav = new Favorites();
@@ -86,6 +107,10 @@ public class FirstActivity extends AppCompatActivity {
         Log.d("FAVORITES", "makeNewFavorites: ");
     }
 
+    /**
+     * Signs in the user using the given firebase method. After logging in it sends the user
+     * to the Search activity.
+     */
     public void signIn(View view) {
         email = emailEditText.getText().toString();
         password = passwordEditText.getText().toString();

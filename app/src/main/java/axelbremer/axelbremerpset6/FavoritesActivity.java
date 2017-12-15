@@ -4,6 +4,9 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -214,5 +217,38 @@ public class FavoritesActivity extends AppCompatActivity {
 
         };
         mDatabase.addListenerForSingleValueEvent(postListener);
+    }
+
+    /**
+     * Creates the top right menu.
+     */
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.actions, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    /**
+     * Sets the functionality of the Favorites button.
+     */
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.favoritesMenuItem:
+                Intent intent = new Intent(FavoritesActivity.this, FavoritesActivity.class);
+                startActivity(intent);
+                break;
+            case R.id.signOutMenuItem:
+                signOut();
+                break;
+        }
+        return true;
+    }
+
+    private void signOut() {
+        mAuth.signOut();
+        Intent firstIntent = new Intent(FavoritesActivity.this, FirstActivity.class);
+        Toast.makeText(FavoritesActivity.this, "Signed out.",
+                Toast.LENGTH_SHORT).show();
+        startActivity(firstIntent);
     }
 }

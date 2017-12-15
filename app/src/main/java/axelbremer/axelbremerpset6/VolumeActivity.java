@@ -14,6 +14,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -258,8 +259,19 @@ public class VolumeActivity extends AppCompatActivity {
                 Intent intent = new Intent(VolumeActivity.this, FavoritesActivity.class);
                 startActivity(intent);
                 break;
+            case R.id.signOutMenuItem:
+                signOut();
+                break;
         }
         return true;
+    }
+
+    private void signOut() {
+        mAuth.signOut();
+        Intent firstIntent = new Intent(VolumeActivity.this, FirstActivity.class);
+        Toast.makeText(VolumeActivity.this, "Signed out.",
+                Toast.LENGTH_SHORT).show();
+        startActivity(firstIntent);
     }
 }
 

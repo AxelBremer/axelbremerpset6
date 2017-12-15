@@ -74,6 +74,9 @@ public class FirstActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Handles the finished user creation task.
+     */
     private void onCreated(Task<AuthResult> task) {
         if (task.isSuccessful()) {
 
@@ -123,18 +126,28 @@ public class FirstActivity extends AppCompatActivity {
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            // Sign in success, update UI with the signed-in user's information
-                            Log.d("LOGIN", "signInWithEmail:success");
-                            Intent intent = new Intent(FirstActivity.this, SearchActivity.class);
-                            startActivity(intent);
-                        } else {
-                            // If sign in fails, display a message to the user.
-                            Log.w("LOGIN", "signInWithEmail:failure", task.getException());
-                            Toast.makeText(FirstActivity.this, "Authentication failed.",
-                                    Toast.LENGTH_SHORT).show();
-                        }
+                        onSigned(task);
                     }
                 });
     }
+
+
+    /**
+     *  Handle the finished sign in task.
+     */
+    private void onSigned(Task<AuthResult> task) {
+        if (task.isSuccessful()) {
+            // Sign in success, update UI with the signed-in user's information
+            Log.d("LOGIN", "signInWithEmail:success");
+            Intent intent = new Intent(FirstActivity.this, SearchActivity.class);
+            startActivity(intent);
+        } else {
+            // If sign in fails, display a message to the user.
+            Log.w("LOGIN", "signInWithEmail:failure", task.getException());
+            Toast.makeText(FirstActivity.this, "Authentication failed.",
+                    Toast.LENGTH_SHORT).show();
+        }
+    }
+
+
 }

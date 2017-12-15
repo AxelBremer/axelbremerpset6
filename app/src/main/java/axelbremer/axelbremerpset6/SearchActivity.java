@@ -45,7 +45,6 @@ public class SearchActivity extends AppCompatActivity {
     String url = "https://www.googleapis.com/books/v1/volumes?maxResults=40&q=";
     String newUrl;
     String query;
-    Globals glob = new Globals();
     private FirebaseAuth mAuth;
 
 
@@ -80,42 +79,7 @@ public class SearchActivity extends AppCompatActivity {
                     public void onResponse(String response) {
                         Log.d("RESPONSE", "onResponse: " + response);
 
-                        try {
-                            JSONObject obj = new JSONObject(response);
-                            JSONArray arr = obj.getJSONArray("items");
-
-                            list = new ArrayList<>();
-                            idList = new ArrayList<>();
-
-                            for(int i = 0; i < arr.length(); i++) {
-                                JSONObject volume = arr.getJSONObject(i);
-                                String title = volume.getJSONObject("volumeInfo").getString("title");
-                                Log.d("RESPONSE", "title: " + title);
-                                String id = volume.getString("id");
-                                Log.d("RESPONSE", "id: " + id);
-                                list.add(title);
-                                idList.add(id);
-                            }
-
-                            updateListView();
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-
-                        // when the list is
-                        resultListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                            @Override
-                            public void onItemClick(AdapterView<?> parent, View view, int position,
-                                                    long id) {
-                                Intent intent = new Intent(SearchActivity.this, VolumeActivity.class);
-                                String chosenId = idList.get(position);
-                                intent.putExtra("Id", chosenId);
-                                startActivity(intent);
-                            }
-                        });
-
-                        updateListView();
+                        parseJSONResponse(response);
                     }
                 }, new Response.ErrorListener() {
             @Override
@@ -124,6 +88,45 @@ public class SearchActivity extends AppCompatActivity {
             }
         });
         queue.add(stringRequest);
+    }
+
+    private void parseJSONResponse(String response) {
+        try {
+            JSONObject obj = new JSONObject(response);
+            JSONArray arr = obj.getJSONArray("items");
+
+            list = new ArrayList<>();
+            idList = new ArrayList<>();
+
+            for(int i = 0; i < arr.length(); i++) {
+                JSONObject volume = arr.getJSONObject(i);
+                String title = volume.getJSONObject("volumeInfo").getString("title");
+                Log.d("RESPONSE", "title: " + title);
+                String id = volume.getString("id");
+                Log.d("RESPONSE", "id: " + id);
+                list.add(title);
+                idList.add(id);
+            }
+
+            updateListView();
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        // when the list is
+        resultListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position,
+                                    long id) {
+                Intent intent = new Intent(SearchActivity.this, VolumeActivity.class);
+                String chosenId = idList.get(position);
+                intent.putExtra("Id", chosenId);
+                startActivity(intent);
+            }
+        });
+
+        updateListView();
     }
 
 

@@ -35,8 +35,11 @@ Loading the image in the VolumeActivity.java file is done using multiple methods
 ##### How to improve:
 Find a better way to handle getting images from the internet and displaying them.
 ### Idiom
+Control structures are used in a normal way. Though there may be a better way to handle certain json items not existing.
 ##### Example:
+VolumeActivity.java.parseJSONResponse()
 ##### How to improve:
+Find out if there is a better way to handle non existent json data.
 ### Expressions
 Sometimes code is written multiple times where it could be written just once if I had been smarter.
 ##### Example:
@@ -44,8 +47,14 @@ VolumeActivity.java parseJSONResponse() volume.getJSONObject.("volumeInfo") is c
 ##### How to improve:
 This could easily be done in a different variable once to make the expressions in which it is called now more readable.
 ### Decomposition
+Routines perform a very limited set of tasks and the number of parameters and shared variables is limited.
 ##### Example:
+N/A
 ##### How to improve:
+N/A
 ### Modularization
+Due to the nature of android studio the activities all have very clearly defined responsibilities. There is no unnecessary back and forth communication.
 ##### Example:
+N/A
 ##### How to improve:
+N/A

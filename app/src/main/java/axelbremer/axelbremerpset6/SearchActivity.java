@@ -114,6 +114,11 @@ public class SearchActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
+        setListener();
+        updateListView();
+    }
+
+    private void setListener() {
         // when the list is
         resultListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -125,8 +130,6 @@ public class SearchActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-
-        updateListView();
     }
 
 

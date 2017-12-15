@@ -175,13 +175,17 @@ public class SearchActivity extends AppCompatActivity {
                 startActivity(intent);
                 break;
             case R.id.signOutMenuItem:
-                mAuth.signOut();
-                Intent firstIntent = new Intent(SearchActivity.this, FirstActivity.class);
-                Toast.makeText(SearchActivity.this, "Signed out.",
-                        Toast.LENGTH_SHORT).show();
-                startActivity(firstIntent);
+                signOut();
                 break;
         }
         return true;
+    }
+
+    private void signOut() {
+        mAuth.signOut();
+        Intent firstIntent = new Intent(SearchActivity.this, FirstActivity.class);
+        Toast.makeText(SearchActivity.this, "Signed out.",
+                Toast.LENGTH_SHORT).show();
+        startActivity(firstIntent);
     }
 }

@@ -124,7 +124,6 @@ public class FirstActivity extends AppCompatActivity {
                             Log.d("LOGIN", "signInWithEmail:success");
                             Intent intent = new Intent(FirstActivity.this, SearchActivity.class);
                             startActivity(intent);
-                            finish();
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w("LOGIN", "signInWithEmail:failure", task.getException());

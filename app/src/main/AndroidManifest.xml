@@ -18,9 +18,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".SearchActivity" />
-        <activity android:name=".VolumeActivity" />
-        <activity android:name=".FavoritesActivity"></activity>
+        <activity android:name=".SearchActivity"
+            android:label="Google Books"/>
+        <activity android:name=".VolumeActivity"
+            android:label="Google Books"/>
+        <activity android:name=".FavoritesActivity"
+            android:label="Google Books"/>
     </application>
 
 </manifest>

@@ -12,6 +12,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -44,6 +45,7 @@ public class SearchActivity extends AppCompatActivity {
     String url = "https://www.googleapis.com/books/v1/volumes?maxResults=40&q=";
     String newUrl;
     String query;
+    Globals glob = new Globals();
     private FirebaseAuth mAuth;
 
 
@@ -118,7 +120,7 @@ public class SearchActivity extends AppCompatActivity {
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Log.d("SHIT", "onErrorResponse: wrong");
+                Log.d("SEARCH", "SearchActivity: wrong");
             }
         });
         queue.add(stringRequest);
@@ -165,6 +167,13 @@ public class SearchActivity extends AppCompatActivity {
             case R.id.favoritesMenuItem:
                 Intent intent = new Intent(SearchActivity.this, FavoritesActivity.class);
                 startActivity(intent);
+                break;
+            case R.id.signOutMenuItem:
+                mAuth.signOut();
+                Intent firstIntent = new Intent(SearchActivity.this, FirstActivity.class);
+                Toast.makeText(SearchActivity.this, "Signed out.",
+                        Toast.LENGTH_SHORT).show();
+                startActivity(firstIntent);
                 break;
         }
         return true;

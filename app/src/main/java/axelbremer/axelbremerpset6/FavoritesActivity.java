@@ -83,32 +83,14 @@ public class FavoritesActivity extends AppCompatActivity {
         /**
          * When long clicking an item the app the selected item will be deleted from the favorites.
          * This only happens when the currently viewed favorites are from the currently logged in
-         * user. If the last book is deleted a new book is added because firebase won't allow an
-         * empty list to be saved.
+         * user.
          */
         favoritesListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> arg0, View arg1,
                                            int pos, long id) {
                 if(viewedUid.equals(loggedInUser.getUid())){
-                    mDatabase = db.getReference();
-                    Favorites fav;
-
-                    nameList.remove(pos);
-                    idList.remove(pos);
-
-                    // if the list is empty make a new one with the starting book.
-                    if(idList.size() == 0){
-                        fav = new Favorites();
-                        Toast.makeText(FavoritesActivity.this, "Gotta have at least 1 favorite.",
-                                Toast.LENGTH_SHORT).show();
-                    } else{
-                        fav = new Favorites(nameList, idList);
-                    }
-
-                    // Set the updated favorites in the database.
-                    mDatabase.child("favorites").child(viewedUid).setValue(fav);
-                    updateListView(loggedInUser.getUid(), loggedInUser.getEmail());
+                    deleteFavorite(pos);
                     return true;
                 } else {
                     Toast.makeText(FavoritesActivity.this, "Can't delete from someone else's favorites.",
@@ -117,6 +99,32 @@ public class FavoritesActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    /**
+     * When long clicking an item the app the selected item will be deleted from the favorites.
+     * If the last book is deleted a new book is added because firebase won't allow an
+     * empty list to be saved.
+     */
+    private void deleteFavorite(int pos) {
+        mDatabase = db.getReference();
+        Favorites fav;
+
+        nameList.remove(pos);
+        idList.remove(pos);
+
+        // if the list is empty make a new one with the starting book.
+        if(idList.size() == 0){
+            fav = new Favorites();
+            Toast.makeText(FavoritesActivity.this, "Gotta have at least 1 favorite.",
+                    Toast.LENGTH_SHORT).show();
+        } else{
+            fav = new Favorites(nameList, idList);
+        }
+
+        // Set the updated favorites in the database.
+        mDatabase.child("favorites").child(viewedUid).setValue(fav);
+        updateListView(loggedInUser.getUid(), loggedInUser.getEmail());
     }
 
     //

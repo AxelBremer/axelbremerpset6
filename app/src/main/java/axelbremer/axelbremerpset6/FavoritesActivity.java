@@ -61,10 +61,10 @@ public class FavoritesActivity extends AppCompatActivity {
         nameTextView = findViewById(R.id.nameTextView);
         searchUserBar = findViewById(R.id.searchUserBar);
 
-        setlisteners();
+        setListeners();
     }
 
-    private void setlisteners() {
+    private void setListeners() {
         /**
          * When clicking on an item, the app takes the user to the details page of that volume.
          */

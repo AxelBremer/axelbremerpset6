@@ -65,30 +65,34 @@ public class FirstActivity extends AppCompatActivity {
                     .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
-                            if (task.isSuccessful()) {
-
-                                // Sign in success, update UI with the signed-in user's information
-                                Log.d("CREATEUSER", "createUserWithEmail:success");
-                                FirebaseUser user = mAuth.getCurrentUser();
-                                makeNewFavorites(user, email);
-                                Intent intent = new Intent(FirstActivity.this, SearchActivity.class);
-                                Toast.makeText(FirstActivity.this, "User created.",
-                                        Toast.LENGTH_SHORT).show();
-                                startActivity(intent);
-
-                            } else {
-
-                                // If sign in fails, display a message to the user.
-                                Log.w("CREATEUSER", "createUserWithEmail:failure", task.getException());
-                                Toast.makeText(FirstActivity.this, "Authentication failed.",
-                                        Toast.LENGTH_SHORT).show();
-
-                            }
+                            onCreated(task);
                         }
                     });
         } else {
             Toast.makeText(FirstActivity.this, "Password must be more than 6 characters.",
                     Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void onCreated(Task<AuthResult> task) {
+        if (task.isSuccessful()) {
+
+            // Sign in success, update UI with the signed-in user's information
+            Log.d("CREATEUSER", "createUserWithEmail:success");
+            FirebaseUser user = mAuth.getCurrentUser();
+            makeNewFavorites(user, email);
+            Intent intent = new Intent(FirstActivity.this, SearchActivity.class);
+            Toast.makeText(FirstActivity.this, "User created.",
+                    Toast.LENGTH_SHORT).show();
+            startActivity(intent);
+
+        } else {
+
+            // If sign in fails, display a message to the user.
+            Log.w("CREATEUSER", "createUserWithEmail:failure", task.getException());
+            Toast.makeText(FirstActivity.this, "Authentication failed.",
+                    Toast.LENGTH_SHORT).show();
+
         }
     }
 

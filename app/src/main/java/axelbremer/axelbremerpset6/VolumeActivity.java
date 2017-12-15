@@ -98,39 +98,7 @@ public class VolumeActivity extends AppCompatActivity {
                     public void onResponse(String response) {
                         Log.d("RESPONSE", "onResponse: " + response);
 
-                        // Extracts the details from the JSON obtained from the api.
-                        try {
-                            JSONObject volume = new JSONObject(response);
-                            String title = volume.getJSONObject("volumeInfo").optString("title");
-                            String desc = volume.getJSONObject("volumeInfo").optString("description");
-                            if(desc == ""){
-                                desc = "no description";
-                            }
-                            JSONObject imageLinks = volume.getJSONObject("volumeInfo").optJSONObject("imageLinks");
-                            String imageUrl = "";
-                            if(imageLinks != null) {
-                                imageUrl = imageLinks.optString("medium");
-                                if(imageUrl == ""){
-                                    imageUrl = imageLinks.optString("thumbnail");
-                                }
-                            }
-                            String authors = "";
-                            JSONArray arr = volume.getJSONObject("volumeInfo").optJSONArray("authors");
-
-                            if(arr != null) {
-                                for (int i = 0; i < arr.length(); i++) {
-                                    authors += arr.getString(i);
-                                }
-                            }
-
-                            // Save these details in a Volume object.
-                            currentVolume = new Volume(title, authors, id, desc, imageUrl);
-
-                            updateViews();
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
+                        parseJSONResponse(response);
                     }
                 }, new Response.ErrorListener() {
             @Override
@@ -139,6 +107,42 @@ public class VolumeActivity extends AppCompatActivity {
             }
         });
         queue.add(stringRequest);
+    }
+
+    private void parseJSONResponse(String response) {
+        // Extracts the details from the JSON obtained from the api.
+        try {
+            JSONObject volume = new JSONObject(response);
+            String title = volume.getJSONObject("volumeInfo").optString("title");
+            String desc = volume.getJSONObject("volumeInfo").optString("description");
+            if(desc == ""){
+                desc = "no description";
+            }
+            JSONObject imageLinks = volume.getJSONObject("volumeInfo").optJSONObject("imageLinks");
+            String imageUrl = "";
+            if(imageLinks != null) {
+                imageUrl = imageLinks.optString("medium");
+                if(imageUrl == ""){
+                    imageUrl = imageLinks.optString("thumbnail");
+                }
+            }
+            String authors = "";
+            JSONArray arr = volume.getJSONObject("volumeInfo").optJSONArray("authors");
+
+            if(arr != null) {
+                for (int i = 0; i < arr.length(); i++) {
+                    authors += arr.getString(i);
+                }
+            }
+
+            // Save these details in a Volume object.
+            currentVolume = new Volume(title, authors, id, desc, imageUrl);
+
+            updateViews();
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -153,6 +157,10 @@ public class VolumeActivity extends AppCompatActivity {
         descTextView.setText(Html.fromHtml(currentVolume.getDesc(), Html.FROM_HTML_MODE_COMPACT));
         authorsTextView.setText(currentVolume.getAuthors());
 
+        retrieveImage();
+    }
+
+    private void retrieveImage() {
         // Retrieve the image
         if(currentVolume.getImageUrl() != "") {
             new Thread() {
